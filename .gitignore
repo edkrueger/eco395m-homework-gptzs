@@ -120,7 +120,8 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+# for this HW, I do want your .env files.
+#.env
 .venv
 env/
 venv/
