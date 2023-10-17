@@ -1,1 +1,1 @@
-# eco395m-homework-gptzs-solution
+# eco395m-homework-gptzs
