@@ -16,7 +16,7 @@ def load_data(path):
 def classify_all(df, api_key):
     """Takes a DataFrame with series named "label" and "text".
     Returns a pd.DataFrame with series named "label" and "text"
-    and also "predicted_text" which is our zero-shot classifier's prediction.
+    and also "predicted_label" which is our zero-shot classifier's prediction.
     """
 
     # write this
@@ -48,5 +48,5 @@ if __name__ == "__main__":
     out_df.to_csv(OUT_PATH, index=False)
 
     print(
-        classification_report(y_true=out_df["label"], y_pred=out_df["predicted_text"])
+        classification_report(y_true=out_df["label"], y_pred=out_df["predicted_label"])
     )
