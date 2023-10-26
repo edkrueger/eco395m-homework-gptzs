@@ -1,3 +1,4 @@
+import backoff
 import openai
 from joblib import Memory
 
@@ -9,7 +10,37 @@ Write this.
 
 memory = Memory(CACHE_DIR, verbose=0)
 
+# By default, the timeout is set to 600s,
+# but a request should take no more than 2-3 seconds.
+# When a request fails, it's better to try again than wait for the timeout.
+# We use the backoff package to make out package retry.
+# At the time of writing this the openai python package,
+# does not respect the timeout argument,
+# this is a currently working alternative
+openai.api_requestor.TIMEOUT_SECS = 4
 
+def _backoff_hdlr(details):
+    """A callback for backoff to report status.
+
+    Args:
+        details (dict): Details form backoff.
+    """
+    # pylint: disable=consider-using-f-string
+    print(
+        "Backing off {wait:0.1f} seconds after {tries} tries "
+        "\n {exception}".format(**details)
+    )
+
+@backoff.on_exception(
+    backoff.expo,
+    (
+        openai.error.RateLimitError,
+        openai.error.APIConnectionError,
+        openai.error.Timeout,
+        openai.error.APIError,
+    ),
+    on_backoff=_backoff_hdlr,
+)
 @memory.cache
 def classify_text_message(text, api_key):
     """
